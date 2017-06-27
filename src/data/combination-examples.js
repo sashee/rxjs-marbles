@@ -29,14 +29,14 @@ export const combinationExamples = {
   merge: {
     label: 'merge',
     inputs: [
-      [{t:0, c:200}, {t:15, c:40}, {t:30, c:60}, {t:45, c:80}, {t:60, c:100}],
-      [{t:37, c:{a:"bb"}}, {t:68, c:1}]
+      {name: "ticks", data: [{t:0}, {t:2}, {t:30, c:60}, {t:45, c:80}, {t:60, c:100}]},
+      {name: "bbb", data: [{t:37, c:{a:"bb"}}, {t:68, c:1}]}
     ],
     apply: function(inputs) {
       return Observable.merge(...inputs);
     },
     outputs: [
-      [{t: 0, c: 3321}]
+      {name: "out", data:[{t: 0, c: 3321}, {t: 90, c: undefined}]}
     ],
   },
 

@@ -35,11 +35,11 @@ function view(sources, value$, isHighlighted$) {
             strokeWidth: STROKE_WIDTH,
           }, isHighlighted ? dropshadow : {}),
         }),
-        svg.text({
+        content ? svg.text({
           attrs: {
             'text-anchor': 'middle', y: '0.8' },
           style: mergeStyles({ fontSize: '2.5px' }, fontBase, userSelectNone),
-        }, [`${JSON.stringify(content)}`]),
+        }, [`${JSON.stringify(content)}`]) : undefined,
       ]),
     );
 }

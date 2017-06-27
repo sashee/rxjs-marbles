@@ -33,19 +33,23 @@ export function Sandbox({ DOM, store }) {
         .startWith(inputsToTimelines(example.inputs))
     )
     .publishReplay(1).refCount();
-
-  const outputStore$ = createOutputStream$(example$, inputStores$);
-  const outputTimelineSources$ = {
-    DOM,
-    marbles: outputStore$.pluck('marbles'),
-    end: outputStore$.pluck('end'),
-    interactive: Observable.of(false),
-  };
+  const oStores$ = example$
+    .switchMap(example =>
+      store.pluck('outputs')
+        .filter(identity)
+        // bug: For some reason inputDataList$ emits old value after
+        // route change. Skip it.
+        .skip(1)
+        .startWith(inputsToTimelines(example.outputs))
+    )
+    .publishReplay(1).refCount();
 
   const inputTimelines$
     = Collection.gather(Timeline, { DOM }, inputStores$, 'id')
       .publishReplay(1).refCount()
-  const outputTimeline = Timeline(outputTimelineSources$);
+  const oTimelines$
+    = Collection.gather(Timeline, { DOM }, oStores$, 'id')
+      .publishReplay(1).refCount()
 
   const inputDOMs$ = Collection.pluck(inputTimelines$, prop('DOM'));
   const inputDataList$ = Collection.pluck(inputTimelines$, prop('data'))
@@ -53,14 +57,15 @@ export function Sandbox({ DOM, store }) {
     .debounceTime(0)
     .withLatestFrom(inputStores$, zip)
     .map(map(apply(flip(merge))));
+  const oDOMs$ = Collection.pluck(oTimelines$, prop('DOM'));
 
   const vtree$ = Observable
-    .combineLatest(inputDOMs$, outputTimeline.DOM, example$)
-    .map(([inputsDOMs, outputDOM, example]) =>
+    .combineLatest(inputDOMs$, oDOMs$, example$)
+    .map(([inputsDOMs, oDOMs, example]) =>
       div({ style: sandboxStyle }, [
         ...inputsDOMs,
         renderOperatorBox(example.label),
-        outputDOM,
+		...oDOMs
       ]),
     );
 

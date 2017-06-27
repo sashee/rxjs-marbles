@@ -1,4 +1,4 @@
-import { svg, div } from '@cycle/dom';
+import { svg, div, span } from '@cycle/dom';
 import isolate from '@cycle/isolate';
 import { Observable } from 'rxjs';
 import { apply, flip, map, max, merge, path, prop, sortBy, zip } from 'ramda';
@@ -9,6 +9,13 @@ import { DIMENS } from '../../styles';
 import { MARBLE_SIZE, STROKE_WIDTH } from './timeline-constants';
 import { Marble } from './marble';
 import { EndMarker } from './end-marker';
+
+import {
+  COLORS,
+  fontBase,
+  userSelectNone,
+  merge as mergeStyles
+} from '../../styles';
 
 const timelineStyle = { padding: `${DIMENS.spaceSmall} ${DIMENS.spaceMedium}` };
 
@@ -60,29 +67,42 @@ function OriginalTimeline(sources) {
   const marbleDOMs$ = sortMarbleDoms$(marbles$);
   const endMarker = EndMarker(endMarkerSources);
 
-  const vtree$ = Observable.combineLatest(marbleDOMs$, endMarker.DOM)
-    .map(([marbleDOMs, endMarkerDOM]) =>
-      div({ style: timelineStyle }, [
-        svg({
-          attrs: { viewBox: '0 0 7 10' },
-          style: { width: '48px', height: '68px', overflow: 'visible' },
-        }, [
-          svg.line({
-            attrs: { x1: '0', x2: '112', y1: '5', y2: '5' },
-            style: { stroke: 'black', strokeWidth: `${STROKE_WIDTH}` },
-          }),
-          svg.polygon({
-            attrs: { points: '111.7,6.1 111.7,3.9 114,5' },
-          }),
-        ]),
-        svg({
-          attrs: { viewBox: '0 0 100 10' },
-          style: { width: '680px', height: '68px', overflow: 'visible' },
-        }, [
-          endMarkerDOM,
-          ...marbleDOMs,
-        ]),
-      ])
+  const vtree$ = Observable.combineLatest(marblesState$, marbleDOMs$, endMarker.DOM)
+    .map(([marbleState, marbleDOMs, endMarkerDOM]) => {
+		const content = marbleState.length > 0 && marbleState[0].name;
+	  return (
+		div({ style: timelineStyle }, [
+			svg({
+			attrs: { viewBox: '0 0 7 10' },
+			style: { width: '48px', height: '68px', overflow: 'visible', position: 'absolute', 'margin-left': '-20px'},
+			}, [
+			content ? svg.text({
+			attrs: {
+				'text-anchor': 'left', y: '0.8' },
+			style: mergeStyles({ fontSize: '2.5px' }, fontBase, userSelectNone),
+			}, [content]) : undefined,
+			]),
+			svg({
+			attrs: { viewBox: '0 0 7 10' },
+			style: { width: '48px', height: '68px', overflow: 'visible' },
+			}, [
+			svg.line({
+				attrs: { x1: '0', x2: '112', y1: '5', y2: '5' },
+				style: { stroke: 'black', strokeWidth: `${STROKE_WIDTH}` },
+			}),
+			svg.polygon({
+				attrs: { points: '111.7,6.1 111.7,3.9 114,5' },
+			}),
+			]),
+			svg({
+			attrs: { viewBox: '0 0 100 10' },
+			style: { width: '680px', height: '68px', overflow: 'visible' },
+			}, [
+			endMarkerDOM,
+			...marbleDOMs,
+			]),
+		])
+	  )}
     );
 
   const marbleData$ = Collection.pluck(marbles$, prop('data'))

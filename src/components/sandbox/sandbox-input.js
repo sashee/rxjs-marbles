@@ -3,11 +3,12 @@ import { last } from 'ramda';
 import { calculateNotificationHash } from './sandbox-utils';
 
 function inputToMarbles(stream) {
-  return stream.map(({ t: time, c: content }, index) => ({
+  return stream.data.map(({ t: time, c: content }, index) => ({
     id: calculateNotificationHash({ time, content }),
     time,
     content,
     itemId: index,
+	name: stream.name
   }));
 }
 
