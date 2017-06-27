@@ -35,6 +35,9 @@ export const combinationExamples = {
     apply: function(inputs) {
       return Observable.merge(...inputs);
     },
+    outputs: [
+      [{t: 0, c: 3321}]
+    ],
   },
 
   race: {
