@@ -24,13 +24,13 @@ function view(sources, value$, isHighlighted$) {
     sources.id, sources.content, value$, isHighlighted$)
     .map(([id, content, value, isHighlighted]) =>
       svg.g({
-        attrs: { class: ELEMENT_CLASS, transform: `translate(${value}, 5)` },
+        attrs: { class: ELEMENT_CLASS, transform: `translate(${value}, 2)` },
         style: { cursor: isHighlighted ? 'ew-resize' : 'default'  },
       }, [
         svg.circle({
-          attrs: { r: MARBLE_SIZE },
+          attrs: { r: 1, transform: "translate(0, 3)" },
           style: merge({
-            fill: POSSIBLE_COLORS[id % POSSIBLE_COLORS.length],
+            fill: COLORS.red,
             stroke: 'black',
             strokeWidth: STROKE_WIDTH,
           }, isHighlighted ? dropshadow : {}),
@@ -39,7 +39,7 @@ function view(sources, value$, isHighlighted$) {
           attrs: {
             'text-anchor': 'middle', y: '0.8' },
           style: mergeStyles({ fontSize: '2.5px' }, fontBase, userSelectNone),
-        }, [`${content}`]),
+        }, [`${JSON.stringify(content)}`]),
       ]),
     );
 }
