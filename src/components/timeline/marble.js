@@ -21,16 +21,16 @@ const POSSIBLE_COLORS = [COLORS.blue, COLORS.green, COLORS.yellow, COLORS.red];
 
 function view(sources, value$, isHighlighted$) {
   return Observable.combineLatest(
-    sources.id, sources.content, value$, isHighlighted$)
-    .map(([id, content, value, isHighlighted]) =>
+    sources.id, sources.content, sources.color, sources.size, value$, isHighlighted$)
+    .map(([id, content, color, size, value, isHighlighted]) =>
       svg.g({
         attrs: { class: ELEMENT_CLASS, transform: `translate(${value}, 2)` },
         style: { cursor: isHighlighted ? 'ew-resize' : 'default'  },
       }, [
         svg.circle({
-          attrs: { r: 1, transform: "translate(0, 3)" },
+          attrs: { r: size, transform: "translate(0, 3)" },
           style: merge({
-            fill: COLORS.red,
+            fill: color,
             stroke: 'black',
             strokeWidth: STROKE_WIDTH,
           }, isHighlighted ? dropshadow : {}),

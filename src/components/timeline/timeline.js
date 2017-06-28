@@ -33,7 +33,8 @@ function OriginalTimeline(sources) {
     DOM,
     marbles: marblesState$,
     end: end$,
-    interactive: interactive$
+    interactive: interactive$,
+	name: name$,
   } = sources;
   const marblesProps$ = end$
     .map((end) => ({
@@ -67,20 +68,19 @@ function OriginalTimeline(sources) {
   const marbleDOMs$ = sortMarbleDoms$(marbles$);
   const endMarker = EndMarker(endMarkerSources);
 
-  const vtree$ = Observable.combineLatest(marblesState$, marbleDOMs$, endMarker.DOM)
-    .map(([marbleState, marbleDOMs, endMarkerDOM]) => {
-		const content = marbleState.length > 0 && marbleState[0].name;
+  const vtree$ = Observable.combineLatest(marblesState$, marbleDOMs$, endMarker.DOM, name$)
+    .map(([marbleState, marbleDOMs, endMarkerDOM, name]) => {
 	  return (
 		div({ style: timelineStyle }, [
 			svg({
 			attrs: { viewBox: '0 0 7 10' },
 			style: { width: '48px', height: '68px', overflow: 'visible', position: 'absolute', 'margin-left': '-20px'},
 			}, [
-			content ? svg.text({
+			name ? svg.text({
 			attrs: {
 				'text-anchor': 'left', y: '0.8' },
 			style: mergeStyles({ fontSize: '2.5px' }, fontBase, userSelectNone),
-			}, [content]) : undefined,
+			}, [name]) : undefined,
 			]),
 			svg({
 			attrs: { viewBox: '0 0 7 10' },

@@ -3,12 +3,14 @@ import { last } from 'ramda';
 import { calculateNotificationHash } from './sandbox-utils';
 
 function inputToMarbles(stream) {
-  return stream.data.map(({ t: time, c: content }, index) => ({
+  return stream.data.map(({ t: time, c: content, color, size}, index) => ({
     id: calculateNotificationHash({ time, content }),
     time,
     content,
     itemId: index,
-	name: stream.name
+	name: stream.name,
+	color: color || stream.defaultColor,
+	size: size || stream.defaultSize || 1
   }));
 }
 
@@ -33,5 +35,7 @@ export function inputsToTimelines(inputs) {
       marbles: inputToMarbles(getInput(input)),
       end: { time: getTime(input) },
       interactive: true,
+	  name: input.name,
+	  defaultColor: input.defaultColor
     }));
 }
