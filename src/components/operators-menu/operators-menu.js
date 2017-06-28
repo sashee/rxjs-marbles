@@ -66,10 +66,6 @@ export function renderOperatorsMenu() {
     { style: operatorsMenuStyle },
     [
       ...categoryMenus,
-      ul({ style: categoryMenuStyle }, [
-        li({ style: operatorsMenuCategoryStyle }, 'More'),
-        li({ style: operatorsMenuItemStyle }, 'Coming soon...'),
-      ]),
     ],
   );
 }
